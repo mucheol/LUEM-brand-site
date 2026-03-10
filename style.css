@@ -1,0 +1,821 @@
+/* ======================================
+   LUEM — style.css
+   적응형(Adaptive) 레이아웃
+   breakpoint: 모바일 <768px / 태블릿 768~1023px / 데스크톱 ≥1024px
+====================================== */
+
+/* ===== 디자인 토큰 ===== */
+:root {
+  --cream:         #F5F0E8;
+  --cream-dark:    #EDE4D4;
+  --charcoal:      #1C1C1C;
+  --charcoal-light:#3A3530;
+  --gold:          #C9973A;
+  --gold-light:    #DDB96A;
+  --warm-gray:     #8A7E74;
+  --border:        rgba(28,28,28,0.12);
+  --font-display:  'Cormorant Garamond', serif;
+  --font-body:     'DM Sans', sans-serif;
+}
+
+/* ===== BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--cream);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-weight: 300;
+  cursor: none;
+  overflow-x: hidden;
+}
+
+/* ===== 커스텀 커서 ===== */
+.cursor {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: var(--charcoal);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: background 0.2s, transform 0.1s;
+}
+.cursor-follower {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(28,28,28,0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.12s ease, width 0.3s, height 0.3s, border-color 0.3s;
+}
+body.cursor-hover .cursor         { transform: translate(-50%,-50%) scale(2); background: var(--gold); }
+body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var(--gold); }
+
+/* ===== 네비게이션 scrolled 상태 ===== */
+.nav.scrolled {
+  background: rgba(245,240,232,0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ===== reveal-line 마스크 트릭 ===== */
+.reveal-line { display: block; overflow: hidden; }
+.reveal-line > * { display: block; }
+.hero-sub-inner { display: block; }
+
+/* ===== Hero CSS 캔들 ===== */
+.candle-glow {
+  position: absolute;
+  top: -30px;
+  width: 40px; height: 40px;
+  background: radial-gradient(circle, rgba(253,214,138,0.8) 0%, rgba(244,166,35,0.3) 50%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0;
+}
+.lid-top {
+  width: 120px; height: 16px;
+  background: linear-gradient(to bottom, #DDD0BC, #C8B89A);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  border-top: 2px solid #E8DDD0;
+}
+.lid-side {
+  width: 120px; height: 30px;
+  background: linear-gradient(to right, #B8A888, #C8B89A, #D4C5B0, #C8B89A, #B8A888);
+  border-radius: 0 0 6px 6px;
+}
+.candle-body {
+  width: 120px;
+  background: linear-gradient(to right, #E0D5C8, #F0EBE3, #E8DDD0);
+  border-radius: 8px 8px 4px 4px;
+  padding: 12px 0 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  border: 1px solid #D4C5B0;
+}
+.candle-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 16px;
+  border: 1px solid rgba(180,160,130,0.4);
+  margin: 0 16px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 3px;
+}
+.label-brand { font-size: 1rem; }
+.label-scent { font-size: 0.52rem; }
+.candle-wax {
+  width: 80px; height: 8px;
+  background: linear-gradient(to bottom, #E8DDD0, #DDD0BC);
+  border-radius: 50%;
+  margin-top: 4px;
+}
+
+/* Hero 스크롤 힌트 라인 애니메이션 */
+@keyframes scrollLine {
+  0%   { transform: scaleY(0); transform-origin: top; }
+  50%  { transform: scaleY(1); transform-origin: top; }
+  51%  { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+.scroll-line {
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(to bottom, var(--charcoal), transparent);
+  animation: scrollLine 1.8s ease-in-out infinite;
+}
+
+/* ===== Three.js 씬 레이아웃 ===== */
+.detail-scene {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.detail-parallax-bg {
+  position: absolute;
+  inset: -40% 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 30% 40%, #1E1206 0%, transparent 65%),
+    radial-gradient(ellipse 50% 70% at 75% 65%, #0A1020 0%, transparent 60%),
+    #080604;
+  will-change: transform;
+}
+.detail-parallax-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  pointer-events: none;
+}
+.detail-bg-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.detail-bg-lines span {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom,
+    transparent 0%, rgba(201,151,58,0.08) 30%,
+    rgba(201,151,58,0.12) 50%, rgba(201,151,58,0.08) 70%, transparent 100%);
+}
+.detail-bg-lines span:nth-child(1) { left: 20%; }
+.detail-bg-lines span:nth-child(2) { left: 50%; opacity: 0.5; }
+.detail-bg-lines span:nth-child(3) { left: 80%; }
+#candleCanvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* step 카드 전환 */
+.detail-step-card {
+  position: absolute;
+  top: 0; right: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+}
+.detail-step-card.active {
+  opacity: 1; transform: translateY(0);
+  pointer-events: auto; position: relative;
+}
+
+/* 좌측 스텝 인디케이터 */
+.detail-step-indicator {
+  position: absolute;
+  left: 6%;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 10;
+}
+.indicator-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.3;
+  transition: opacity 0.4s;
+}
+.indicator-item.active { opacity: 1; }
+.indicator-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cream);
+  white-space: nowrap;
+}
+.indicator-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(245,240,232,0.4);
+  transition: background 0.3s, transform 0.3s;
+}
+.indicator-item.active .indicator-dot {
+  background: var(--gold); transform: scale(1.5);
+}
+.step-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: rgba(245,240,232,0.18);
+  transition: background 0.3s, transform 0.3s;
+}
+.step-dot.active { background: var(--gold); transform: scale(1.5); }
+
+/* 스크롤 진행 바 */
+.scroll-progress-wrap { width: 100px; height: 1px; background: rgba(245,240,232,0.15); }
+.scroll-progress-fill { height: 100%; background: var(--gold); width: 0%; }
+
+/* ===== 컬렉션 캔들 그라디언트 ===== */
+.col-candle-inner { position: relative; }
+.col-candle-inner::after {
+  content: '';
+  position: absolute;
+  top: 12px; left: 50%;
+  transform: translateX(-50%);
+  width: 60px; height: 1px;
+  background: rgba(180,160,130,0.5);
+}
+.col-candle-01 { background: linear-gradient(160deg, #EDE4D4 0%, #DDD0B8 100%); }
+.col-candle-02 { background: linear-gradient(160deg, #DDE8E0 0%, #BDDDD0 100%); }
+.col-candle-03 { background: linear-gradient(160deg, #E8E0ED 0%, #D4C8E4 100%); }
+.col-candle-04 { background: linear-gradient(160deg, #E8E4D8 0%, #D8D0BC 100%); }
+.collection-track { display: flex; gap: 0; will-change: transform; }
+
+/* ===== 재료 — 패럴랙스 이미지 ===== */
+/*
+  구조: parallax-img-wrap (overflow:hidden, 고정 height)
+          └ parallax-img (position:absolute, inset:-15% 0 → 위아래 15% 여유)
+              └ parallax-img-inner (100% 채움, GSAP y 이동 대상)
+  parallax-img가 wrap보다 30% 더 크게 잡아두어야 translateY(-15%) 해도 빈 공간 없음
+*/
+.parallax-img-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.parallax-img {
+  position: absolute;
+  inset: -15% 0;        /* 위아래 15% 여유 → 총 130% 높이 */
+  width: 100%;
+}
+.parallax-img-inner {
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(180deg, rgba(201,151,58,0.15) 0%, transparent 50%),
+    url('https://images.pexels.com/photos/4207912/pexels-photo-4207912.jpeg?auto=compress&cs=tinysrgb&w=800') center/cover no-repeat;
+  will-change: transform;
+}
+
+/* material-item 등장 transition */
+.material-item {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+.material-item.visible {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* SVG 라인드로잉 초기값 */
+.draw-path {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+}
+
+/* ===== 갤러리 ===== */
+/*
+  핵심 원칙:
+  - 모든 이미지 aspect-ratio: 3/2 (가로형) 고정
+  - gi-inner는 부모를 100% 채우고 background-size: cover로 중앙 크롭
+  - 어떤 breakpoint에서도 height 고정값 없음 → 잘림 없음
+*/
+.gallery-item {
+  overflow: hidden;
+  border-radius: 3px;
+  opacity: 0;
+  transform: translateY(40px);
+  /* aspect-ratio로 높이 자동 결정 */
+  aspect-ratio: 3 / 2;
+}
+.gi-inner {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.08);
+  transition: transform 0.7s ease;
+}
+.gallery-item:hover .gi-inner { transform: scale(1.02); }
+
+/* 12장 이미지 — 캔들 제품/제작/인테리어 테마 (접근 확인 완료) */
+.gi-1  .gi-inner { background-image: url('https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=800&q=80'); } /* 테이블 위 캔들 인테리어 */
+.gi-2  .gi-inner { background-image: url('https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=800&q=80'); } /* 왁스 붓는 제작 과정 */
+.gi-3  .gi-inner { background-image: url('https://images.unsplash.com/photo-1605651531144-51381895e23d?w=800&q=80'); } /* 유리 용기 캔들 클로즈업 */
+.gi-4  .gi-inner { background-image: url('https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800&q=80'); } /* 캔들과 꽃 소품 배치 */
+.gi-5  .gi-inner { background-image: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80'); } /* 욕실 캔들 */
+.gi-6  .gi-inner { background-image: url('https://images.unsplash.com/photo-1572726729207-a78d6feb18d7?w=800&q=80'); } /* 허브/원재료 소품 */
+.gi-7  .gi-inner { background-image: url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800&q=80'); } /* 나무 뚜껑 캔들 제품 */
+.gi-8  .gi-inner { background-image: url('https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=800&q=80'); } /* 어두운 배경 촛불 무드 */
+.gi-9  .gi-inner { background-image: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80'); } /* 캔들 여러 개 배열 */
+.gi-10 .gi-inner { background-image: url('https://images.unsplash.com/photo-1609902726285-00668009f004?w=800&q=80'); } /* 소이빈 원재료 */
+.gi-11 .gi-inner { background-image: url('https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=800&q=80'); } /* 캔들 심지 클로즈업 */
+.gi-12 .gi-inner { background-image: url('https://images.unsplash.com/photo-1602523961358-f9f03dd557db?w=800&q=80'); } /* 거실 인테리어 캔들 */
+
+/* ===== Footer 배경 텍스트 ===== */
+.footer-bg-text {
+  position: absolute;
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: rgba(245,240,232,0.04);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* detail-text-panel 데스크톱 기본 위치 */
+.detail-text-panel {
+  position: absolute;
+  right: 7%;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 300px;
+}
+
+/* ===== Hero 2열 레이아웃 공통 ===== */
+.hero-layout {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+/* 캔들 열: 모바일 기본 숨김, 태블릿+ 표시 */
+.hero-candle-col {
+  display: none;
+}
+/* 캔들 비주얼 컨테이너 */
+.hero-candle-visual {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* 캔들 뒤 원형 장식 */
+.hero-candle-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(201,151,58,0.18);
+  pointer-events: none;
+}
+/* 향 이름 뱃지 */
+.hero-candle-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+}
+.hero-candle-badge-line {
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.6;
+}
+.hero-candle-badge-text {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+}
+
+
+/* ============================================================
+   모바일: ~767px
+   단일 열 레이아웃, 간소화
+============================================================ */
+@media (max-width: 767px) {
+
+  /* 네비 */
+  .nav {
+    padding: 16px 20px;
+  }
+  .nav-logo { font-size: 1.3rem; }
+  .nav-btn {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    padding: 6px 12px;
+  }
+
+  /* Hero */
+  .hero { padding: 100px 20px 60px; }
+  .hero-layout {
+    flex-direction: column;
+    gap: 0;
+    justify-content: center;
+  }
+  .hero-content { max-width: 100%; }
+  .hero-sub { font-size: 0.62rem; margin-bottom: 18px; }
+  .hero-title { font-size: 4rem; margin-bottom: 20px; }
+  .hero-title-indent { padding-left: 28px; font-style: italic; color: var(--charcoal-light); }
+  .hero-desc { font-size: 0.88rem; margin-bottom: 28px; }
+  .hero-btn { font-size: 0.72rem; padding-bottom: 6px; }
+  .hero-candle-col { display: none !important; }
+  .hero-scroll-hint { bottom: 24px; left: 20px; }
+  .hero-scroll-text { font-size: 0.6rem; }
+
+  /* Detail */
+  .detail-step-indicator { display: none; }
+  .detail-text-panel {
+    position: absolute;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    top: auto;
+    bottom: 48px;
+    max-width: 320px;
+    width: calc(100% - 40px);
+    text-align: center;
+  }
+  .step-heading { font-size: 1.5rem; }
+  .step-body { font-size: 0.78rem; }
+  .step-idx { font-size: 0.6rem; }
+  .detail-scroll-text { font-size: 0.55rem; }
+
+  /* Collection */
+  .collection { padding-top: 52px; padding-bottom: 36px; }
+  .collection-header { padding: 0 20px; margin-bottom: 32px; }
+  .section-label { font-size: 0.65rem; margin-bottom: 12px; }
+  .section-title { font-size: 2rem; }
+  .col-item {
+    width: 300px;
+    min-height: 400px;
+    flex-direction: column;
+    gap: 20px;
+    padding: 28px 20px;
+  }
+  .col-candle { width: 100%; justify-content: center; }
+  .col-candle-inner { width: 72px; height: 144px; }
+  .col-num { font-size: 0.62rem; margin-bottom: 8px; }
+  .col-name { font-size: 1.7rem; margin-bottom: 8px; }
+  .col-note { font-size: 0.62rem; margin-bottom: 8px; }
+  .col-desc { font-size: 0.82rem; margin-bottom: 16px; }
+  .col-burn { font-size: 0.68rem; padding: 6px 12px; }
+  .collection-progress { margin: 24px 20px 0; }
+
+  /* Material */
+  .material { padding: 52px 20px; }
+  .material-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    max-width: 100%;
+  }
+  .material-text-col { width: 100%; }
+  .material-title { font-size: 2.2rem; margin-bottom: 32px; }
+  .material-icon { width: 44px; height: 44px; }
+  .material-item-title { font-size: 1rem; margin-bottom: 6px; }
+  .material-item-desc { font-size: 0.8rem; }
+  .material-image-col { width: 100%; }
+  .parallax-img-wrap { height: 260px; }
+  .parallax-badge { width: 80px; height: 80px; }
+  .badge-num { font-size: 1.3rem; }
+  .badge-text { font-size: 0.46rem; }
+
+  /* Gallery — 모바일: 1열, 12장 모두 표시, aspect-ratio로 비율 고정 */
+  .gallery { padding: 52px 20px; }
+  .gallery-header { margin-bottom: 28px; }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  /* 모든 아이템 동일 비율 — height 고정 없음 */
+  .gi-1, .gi-2, .gi-3, .gi-4, .gi-5, .gi-6,
+  .gi-7, .gi-8, .gi-9, .gi-10, .gi-11, .gi-12 {
+    aspect-ratio: 3 / 2;
+    height: auto;
+  }
+
+  /* Footer */
+  .footer-cta { padding: 64px 20px 48px; }
+  .footer-title { font-size: 2.2rem; margin-bottom: 36px; }
+  .footer-actions { margin-bottom: 48px; gap: 12px; }
+  .btn-primary, .btn-secondary {
+    font-size: 0.72rem;
+    padding: 12px 24px;
+  }
+  .footer-meta {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding-top: 18px;
+    font-size: 0.64rem;
+  }
+  .footer-bg-text { font-size: 100px; }
+  .section-label { margin-bottom: 12px; }
+}
+
+
+/* ============================================================
+   태블릿: 768px ~ 1023px
+   2단 레이아웃 일부 적용
+============================================================ */
+@media (min-width: 768px) and (max-width: 1023px) {
+
+  /* 네비 */
+  .nav {
+    padding: 20px 36px;
+  }
+  .nav-logo { font-size: 1.5rem; }
+  .nav-link { font-size: 0.72rem; letter-spacing: 0.1em; }
+  .nav-btn {
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
+    padding: 8px 18px;
+  }
+
+  /* Hero */
+  .hero { padding: 120px 36px 72px; }
+  .hero-layout {
+    flex-direction: row;
+    gap: 0;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .hero-content { max-width: 360px; flex: none; }
+  .hero-candle-col {
+    flex: 1;
+    display: flex !important;
+    justify-content: center;
+  }
+  .hero-candle-ring {
+    width: 260px; height: 260px;
+  }
+  .hero-sub { font-size: 0.68rem; margin-bottom: 22px; }
+  .hero-title { font-size: 5rem; margin-bottom: 24px; }
+  .hero-title-indent { padding-left: 36px; font-style: italic; color: var(--charcoal-light); }
+  .hero-desc { font-size: 0.9rem; margin-bottom: 32px; }
+  .hero-btn { font-size: 0.75rem; padding-bottom: 6px; }
+  .hero-scroll-hint { bottom: 32px; left: 36px; }
+  .hero-scroll-text { font-size: 0.63rem; }
+
+  /* Detail */
+  .detail-step-indicator { display: none; }
+  .detail-text-panel {
+    position: absolute;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    top: auto;
+    bottom: 60px;
+    max-width: 440px;
+    width: calc(100% - 72px);
+    text-align: center;
+  }
+  .step-heading { font-size: 2rem; }
+  .step-body { font-size: 0.82rem; }
+  .step-idx { font-size: 0.63rem; }
+
+  /* Collection */
+  .collection { padding-top: 72px; padding-bottom: 48px; }
+  .collection-header { padding: 0 36px; margin-bottom: 44px; }
+  .section-label { font-size: 0.68rem; margin-bottom: 14px; }
+  .section-title { font-size: 2.8rem; }
+  .col-item {
+    width: 480px;
+    min-height: 480px;
+    flex-direction: row;
+    align-items: center;
+    gap: 40px;
+    padding: 48px 40px;
+  }
+  .col-candle { width: 140px; flex: none; }
+  .col-candle-inner { width: 88px; height: 176px; }
+  .col-num { font-size: 0.63rem; margin-bottom: 10px; }
+  .col-name { font-size: 2rem; margin-bottom: 10px; }
+  .col-note { font-size: 0.65rem; margin-bottom: 10px; }
+  .col-desc { font-size: 0.85rem; margin-bottom: 20px; }
+  .col-burn { font-size: 0.7rem; padding: 7px 14px; }
+  .collection-progress { margin: 32px 36px 0; }
+
+  /* Material */
+  .material { padding: 80px 36px; }
+  .material-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    max-width: 100%;
+  }
+  .material-text-col { width: 100%; }
+  .material-title { font-size: 2.8rem; margin-bottom: 44px; }
+  .material-icon { width: 52px; height: 52px; }
+  .material-item-title { font-size: 1.1rem; margin-bottom: 7px; }
+  .material-item-desc { font-size: 0.82rem; }
+  .material-image-col { width: 100%; }
+  .parallax-img-wrap { height: 380px; }
+  .parallax-badge { width: 96px; height: 96px; }
+  .badge-num { font-size: 1.6rem; }
+  .badge-text { font-size: 0.5rem; }
+
+  /* Gallery — 태블릿: 2열, 12장, aspect-ratio 고정 */
+  .gallery { padding: 72px 36px; }
+  .gallery-header { margin-bottom: 44px; }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .gi-1, .gi-2, .gi-3, .gi-4, .gi-5, .gi-6,
+  .gi-7, .gi-8, .gi-9, .gi-10, .gi-11, .gi-12 {
+    aspect-ratio: 3 / 2;
+    height: auto;
+  }
+
+  /* Footer */
+  .footer-cta { padding: 100px 36px 64px; }
+  .footer-title { font-size: 3.6rem; margin-bottom: 48px; }
+  .footer-actions { margin-bottom: 60px; gap: 16px; }
+  .btn-primary, .btn-secondary {
+    font-size: 0.74rem;
+    padding: 14px 28px;
+  }
+  .footer-meta {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-top: 22px;
+    font-size: 0.68rem;
+  }
+  .footer-bg-text { font-size: 160px; }
+  .section-label { margin-bottom: 14px; }
+}
+
+
+/* ============================================================
+   데스크톱: ≥1024px
+   풀 레이아웃
+============================================================ */
+@media (min-width: 1024px) {
+
+  /* 네비 */
+  .nav {
+    padding: 28px 60px;
+  }
+  .nav-logo { font-size: 1.6rem; }
+  .nav-link { font-size: 0.75rem; letter-spacing: 0.12em; }
+  .nav-btn {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    padding: 10px 22px;
+  }
+  .nav.scrolled { padding: 18px 60px; }
+
+  /* Hero */
+  .hero { padding: 0 60px; }
+  .hero-layout {
+    flex-direction: row;
+    gap: 0;
+    justify-content: center;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    column-gap: 80px;
+  }
+  .hero-content { flex: none; width: 480px; }
+  .hero-candle-col {
+    flex: 1;
+    display: flex !important;
+    justify-content: center;
+    max-width: 420px;
+  }
+  .hero-candle-ring {
+    width: 320px; height: 320px;
+  }
+  .hero-sub { font-size: 0.72rem; margin-bottom: 24px; }
+  .hero-title { font-size: 7.5rem; margin-bottom: 28px; }
+  .hero-title-indent { padding-left: 48px; font-style: italic; color: var(--charcoal-light); }
+  .hero-desc { font-size: 1rem; margin-bottom: 40px; }
+  .hero-btn { font-size: 0.8rem; padding-bottom: 6px; }
+  .hero-scroll-hint { bottom: 40px; left: 60px; }
+  .hero-scroll-text { font-size: 0.65rem; }
+
+  /* Detail */
+  .detail-step-indicator { display: flex; }
+  .detail-text-panel {
+    position: absolute;
+    right: 7%;
+    top: 50%;
+    transform: translateY(-50%);
+    left: auto;
+    bottom: auto;
+    max-width: 300px;
+    width: auto;
+    text-align: left;
+  }
+  .step-heading { font-size: 2.6rem; }
+  .step-body { font-size: 0.87rem; }
+  .step-idx { font-size: 0.65rem; }
+
+  /* Collection */
+  .collection { padding-top: 100px; padding-bottom: 60px; }
+  .collection-header { padding: 0 60px; margin-bottom: 60px; }
+  .section-label { font-size: 0.7rem; margin-bottom: 16px; }
+  .section-title { font-size: 3.8rem; }
+  .col-item {
+    width: 560px;
+    min-height: 560px;
+    flex-direction: row;
+    align-items: center;
+    gap: 56px;
+    padding: 60px 56px;
+  }
+  .col-candle { width: 160px; flex: none; }
+  .col-candle-inner { width: 100px; height: 200px; }
+  .col-num { font-size: 0.65rem; margin-bottom: 14px; }
+  .col-name { font-size: 2.2rem; margin-bottom: 14px; }
+  .col-note { font-size: 0.68rem; margin-bottom: 14px; }
+  .col-desc { font-size: 0.88rem; margin-bottom: 24px; }
+  .col-burn { font-size: 0.72rem; padding: 7px 16px; }
+  .collection-progress { margin: 40px 60px 0; }
+
+  /* Material */
+  .material { padding: 120px 60px; }
+  .material-inner {
+    display: flex;
+    flex-direction: row;
+    gap: 80px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .material-text-col { flex: 1; }
+  .material-title { font-size: 3.4rem; margin-bottom: 56px; }
+  .material-icon { width: 60px; height: 60px; }
+  .material-item-title { font-size: 1.2rem; margin-bottom: 8px; }
+  .material-item-desc { font-size: 0.85rem; }
+  .material-image-col { flex: none; width: 420px; }
+  .parallax-img-wrap { height: 560px; }
+  .parallax-badge { width: 110px; height: 110px; }
+  .badge-num { font-size: 1.8rem; }
+  .badge-text { font-size: 0.55rem; }
+
+  /* Gallery — 데스크톱: 4열, 12장, aspect-ratio 고정 */
+  .gallery { padding: 100px 60px; }
+  .gallery-header { margin-bottom: 60px; }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .gi-1, .gi-2, .gi-3, .gi-4, .gi-5, .gi-6,
+  .gi-7, .gi-8, .gi-9, .gi-10, .gi-11, .gi-12 {
+    aspect-ratio: 3 / 2;
+    height: auto;
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  /* Footer */
+  .footer-cta { padding: 140px 60px 80px; }
+  .footer-title { font-size: 5.5rem; margin-bottom: 56px; }
+  .footer-actions { margin-bottom: 80px; gap: 20px; }
+  .btn-primary, .btn-secondary {
+    font-size: 0.78rem;
+    padding: 16px 36px;
+  }
+  .footer-meta {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-top: 28px;
+    font-size: 0.72rem;
+  }
+  .footer-bg-text { font-size: 220px; }
+  .section-label { margin-bottom: 16px; }
+}
