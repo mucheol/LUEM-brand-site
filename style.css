@@ -244,6 +244,15 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
 .scroll-progress-wrap { width: 100px; height: 1px; background: rgba(245,240,232,0.15); }
 .scroll-progress-fill { height: 100%; background: var(--gold); width: 0%; }
 
+/* 컬렉션 progress bar — collectionWrap 하단에 항상 붙음 */
+.collection-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+
 /* ===== 컬렉션 캔들 그라디언트 ===== */
 .col-candle-inner { position: relative; }
 .col-candle-inner::after {
@@ -546,6 +555,12 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
     max-width: 320px;
     width: calc(100% - 40px);
     text-align: center;
+    background: rgba(7, 6, 3, 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(201,151,58,0.15);
+    border-radius: 4px;
+    padding: 24px 24px;
   }
   .step-heading { font-size: 1.5rem; }
   .step-body { font-size: 0.78rem; }
@@ -592,19 +607,21 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
   .badge-num { font-size: 1.3rem; }
   .badge-text { font-size: 0.46rem; }
 
-  /* Gallery — 모바일: 1열, 12장 모두 표시, aspect-ratio로 비율 고정 */
+  /* Gallery — 모바일: 2열, 12장 모두 표시, aspect-ratio로 비율 고정 */
   .gallery { padding: 52px 20px; }
   .gallery-header { margin-bottom: 28px; }
   .gallery-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 8px;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
   }
   /* 모든 아이템 동일 비율 — height 고정 없음 */
   .gi-1, .gi-2, .gi-3, .gi-4, .gi-5, .gi-6,
   .gi-7, .gi-8, .gi-9, .gi-10, .gi-11, .gi-12 {
     aspect-ratio: 3 / 2;
     height: auto;
+    grid-column: auto;
+    grid-row: auto;
   }
 
   /* Footer */
@@ -622,7 +639,7 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
     padding-top: 18px;
     font-size: 0.64rem;
   }
-  .footer-bg-text { font-size: 100px; }
+  .footer-bg-text { font-size: 100px; bottom: -10px; }
   .section-label { margin-bottom: 12px; }
 }
 
@@ -646,18 +663,23 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
   }
 
   /* Hero */
-  .hero { padding: 120px 36px 72px; }
+  .hero { padding: 120px 48px 72px; }
   .hero-layout {
     flex-direction: row;
     gap: 0;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    column-gap: 60px;
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
   }
-  .hero-content { max-width: 400px; flex: none; }
+  .hero-content { max-width: 420px; flex: none; }
   .hero-candle-col {
     flex: 1;
     display: flex !important;
     justify-content: center;
+    max-width: 360px;
   }
   .hero-candle-ring {
     width: 300px; height: 300px;
@@ -674,14 +696,20 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
   .detail-step-indicator { display: none; }
   .detail-text-panel {
     position: absolute;
+    left: 40px;
     right: auto;
-    left: 50%;
-    transform: translateX(-50%);
+    transform: none;
     top: auto;
     bottom: 60px;
-    max-width: 440px;
-    width: calc(100% - 72px);
-    text-align: center;
+    max-width: 360px;
+    width: auto;
+    text-align: left;
+    background: rgba(7, 6, 3, 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(201,151,58,0.15);
+    border-radius: 4px;
+    padding: 28px 32px;
   }
   .step-heading { font-size: 2rem; }
   .step-body { font-size: 0.82rem; }
@@ -905,3 +933,16 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
   .footer-bg-text { font-size: 220px; }
   .section-label { margin-bottom: 16px; }
 }
+
+/* 1024~1200px — 제품 텍스트 겹침 방지: 배경 추가 */
+@media (min-width: 1024px) and (max-width: 1200px) {
+  .detail-text-panel {
+    background: rgba(7, 6, 3, 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(201,151,58,0.15);
+    border-radius: 4px;
+    padding: 28px 32px;
+  }
+}
+

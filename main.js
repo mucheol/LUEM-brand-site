@@ -580,12 +580,15 @@ ScrollTrigger.create({
 
   const getTotal = () => track.scrollWidth - window.innerWidth;
 
+  const navH = qs('#nav') ? qs('#nav').offsetHeight : 0;
+  const colStart = window.innerWidth < 768 ? `top ${navH}px` : 'top top';
+
   gsap.to(track, {
     x: () => -getTotal(),
     ease: 'none',
     scrollTrigger: {
       trigger: '#collectionWrap',
-      start: 'top top',
+      start: colStart,
       end: () => `+=${getTotal()}`,
       scrub: 1,
       pin: true,
