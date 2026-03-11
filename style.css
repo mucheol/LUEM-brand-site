@@ -244,6 +244,15 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
 .scroll-progress-wrap { width: 100px; height: 1px; background: rgba(245,240,232,0.15); }
 .scroll-progress-fill { height: 100%; background: var(--gold); width: 0%; }
 
+/* 컬렉션 progress bar — collectionWrap 하단에 항상 붙음 */
+.collection-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+
 /* ===== 컬렉션 캔들 그라디언트 ===== */
 .col-candle-inner { position: relative; }
 .col-candle-inner::after {
@@ -646,18 +655,23 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
   }
 
   /* Hero */
-  .hero { padding: 120px 36px 72px; }
+  .hero { padding: 120px 48px 72px; }
   .hero-layout {
     flex-direction: row;
     gap: 0;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    column-gap: 60px;
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
   }
-  .hero-content { max-width: 400px; flex: none; }
+  .hero-content { max-width: 420px; flex: none; }
   .hero-candle-col {
     flex: 1;
     display: flex !important;
     justify-content: center;
+    max-width: 360px;
   }
   .hero-candle-ring {
     width: 300px; height: 300px;
@@ -674,14 +688,20 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
   .detail-step-indicator { display: none; }
   .detail-text-panel {
     position: absolute;
+    left: 40px;
     right: auto;
-    left: 50%;
-    transform: translateX(-50%);
+    transform: none;
     top: auto;
     bottom: 60px;
-    max-width: 440px;
-    width: calc(100% - 72px);
-    text-align: center;
+    max-width: 360px;
+    width: auto;
+    text-align: left;
+    background: rgba(7, 6, 3, 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(201,151,58,0.15);
+    border-radius: 4px;
+    padding: 28px 32px;
   }
   .step-heading { font-size: 2rem; }
   .step-body { font-size: 0.82rem; }
@@ -905,3 +925,4 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
   .footer-bg-text { font-size: 220px; }
   .section-label { margin-bottom: 16px; }
 }
+
