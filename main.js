@@ -25,14 +25,14 @@ document.addEventListener('mousemove', e => {
 
 // 팔로워 부드러운 래그 (lerp 0.18 = 적당한 부드러움, 빠른 반응)
 (function animateFollower() {
-  followerX += (mouseX - followerX) * 0.18;
-  followerY += (mouseY - followerY) * 0.18;
+  followerX += (mouseX - followerX) * 0.15;
+  followerY += (mouseY - followerY) * 0.15;
   gsap.set(follower, { x: followerX, y: followerY });
   requestAnimationFrame(animateFollower);
 })();
 
 // 호버 시 커서 확장
-qsa('a, button, .col-item, .gallery-item').forEach(el => {
+qsa('a, button, .col-item, .gallery-item, .hero-candle-visual').forEach(el => {
   el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
   el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
 });
@@ -259,43 +259,47 @@ ScrollTrigger.create({
     const group = new THREE.Group();
     scene.add(group);
 
-    // 유리 몸통
-    const glassGeo = new THREE.CylinderGeometry(0.74, 0.70, 2.8, 80, 1, true);
+    // 유리 몸통 — 높이 2.8 → 2.0으로 단축, y 중심 조정
+    const glassGeo = new THREE.CylinderGeometry(0.74, 0.74, 2.0, 80, 1, true);
     const glassMesh = new THREE.Mesh(glassGeo, glassMat);
-    glassMesh.position.y = -0.1;
+    glassMesh.position.y = 0.0;
     glassMesh.castShadow = true; glassMesh.receiveShadow = true;
     group.add(glassMesh);
 
-    const glassRimGeo = new THREE.CylinderGeometry(0.745, 0.705, 2.82, 80, 1, true);
-    group.add(new THREE.Mesh(glassRimGeo, glassRimMat));
+    const glassRimGeo = new THREE.CylinderGeometry(0.745, 0.745, 2.02, 80, 1, true);
+    const glassRimMesh = new THREE.Mesh(glassRimGeo, glassRimMat);
+    glassRimMesh.position.y = 0.0;
+    group.add(glassRimMesh);
 
-    const bottomGeo = new THREE.CylinderGeometry(0.70, 0.67, 0.10, 64);
+    // 유리 바닥 — 몸통에 딱 붙도록
+    const bottomGeo = new THREE.CylinderGeometry(0.74, 0.74, 0.10, 64);
     const bottomMesh = new THREE.Mesh(bottomGeo, glassMat);
-    bottomMesh.position.y = -1.55;
+    bottomMesh.position.y = -1.05;
     group.add(bottomMesh);
 
-    const baseRingGeo = new THREE.TorusGeometry(0.68, 0.045, 16, 80);
+    // 바닥 링 — 바닥면에 밀착
+    const baseRingGeo = new THREE.TorusGeometry(0.72, 0.032, 16, 80);
     const baseRingMesh = new THREE.Mesh(baseRingGeo, baseRingMat);
     baseRingMesh.rotation.x = Math.PI / 2;
-    baseRingMesh.position.y = -1.58;
+    baseRingMesh.position.y = -1.08;
     group.add(baseRingMesh);
 
-    // 왁스
+    // 왁스 — 유리 높이(2.0)에 맞춰 내부 채움
     const waxBodyGeo = new THREE.CylinderGeometry(0.67, 0.67, 1.6, 64);
     const waxBodyMesh = new THREE.Mesh(waxBodyGeo, waxMat);
-    waxBodyMesh.position.y = 0.10;
+    waxBodyMesh.position.y = -0.2;
     group.add(waxBodyMesh);
 
     const waxTopGeo = new THREE.CylinderGeometry(0.67, 0.67, 0.04, 64);
     const waxTopMesh = new THREE.Mesh(waxTopGeo, waxTopMat);
-    waxTopMesh.position.y = 0.92;
+    waxTopMesh.position.y = 0.62;
     group.add(waxTopMesh);
 
     const waxRingGeo = new THREE.TorusGeometry(0.10, 0.028, 12, 40);
     const waxRingMat = new THREE.MeshStandardMaterial({ color: 0xD4C090, roughness: 0.5 });
     const waxRingMesh = new THREE.Mesh(waxRingGeo, waxRingMat);
     waxRingMesh.rotation.x = Math.PI / 2;
-    waxRingMesh.position.y = 0.94;
+    waxRingMesh.position.y = 0.64;
     group.add(waxRingMesh);
 
     // 라벨
@@ -314,14 +318,14 @@ ScrollTrigger.create({
       group.add(m);
     });
 
-    // 심지
-    const wickGeo = new THREE.CylinderGeometry(0.018, 0.022, 0.22, 10);
+    // 심지 — 왁스 상단(0.62)에서 자연스럽게 돌출
+    const wickGeo = new THREE.CylinderGeometry(0.016, 0.020, 0.18, 10);
     const wickMesh = new THREE.Mesh(wickGeo, wickMat);
-    wickMesh.position.y = 1.04;
+    wickMesh.position.y = 0.73;
     group.add(wickMesh);
 
     // 불꽃
-    const mkFlame = (scaleR, scaleH, yOff) => {
+    const mkFlame = (scaleR, scaleH) => {
       const pts = [];
       for (let i = 0; i <= 14; i++) {
         const t = i / 14;
@@ -331,17 +335,17 @@ ScrollTrigger.create({
       return new THREE.LatheGeometry(pts, 20);
     };
 
-    const flameMesh = new THREE.Mesh(mkFlame(0.13, 0.55, 0), flameMat);
-    flameMesh.position.y = 1.15;
+    const flameMesh = new THREE.Mesh(mkFlame(0.13, 0.55), flameMat);
+    flameMesh.position.y = 0.82;
     group.add(flameMesh);
 
-    const coreMesh = new THREE.Mesh(mkFlame(0.065, 0.36, 0), flameCoreMat);
-    coreMesh.position.y = 1.18;
+    const coreMesh = new THREE.Mesh(mkFlame(0.065, 0.36), flameCoreMat);
+    coreMesh.position.y = 0.85;
     group.add(coreMesh);
 
     const glowGeo = new THREE.SphereGeometry(0.28, 16, 16);
     const glowMesh = new THREE.Mesh(glowGeo, glowMat);
-    glowMesh.position.y = 1.32;
+    glowMesh.position.y = 0.95;
     group.add(glowMesh);
 
     // 뚜껑 그룹
@@ -382,22 +386,11 @@ ScrollTrigger.create({
     lidBandMesh.position.y = 1.51;
     lidGroup.add(lidBandMesh);
 
-    // 바닥 반사 플레인
-    const reflGeo = new THREE.PlaneGeometry(5, 5);
-    const reflMat = new THREE.MeshStandardMaterial({
-      color: 0x100E0A, roughness: 0.2, metalness: 0.5,
-      transparent: true, opacity: 0.6,
-    });
-    const reflMesh = new THREE.Mesh(reflGeo, reflMat);
-    reflMesh.rotation.x = -Math.PI / 2;
-    reflMesh.position.y = -1.62;
-    reflMesh.receiveShadow = true;
-    group.add(reflMesh);
 
     // 반사된 캔들 복사본
     const mirrorGroup = group.clone();
     mirrorGroup.scale.y = -0.18;
-    mirrorGroup.position.y = -3.3;
+    mirrorGroup.position.y = -1.4;
     mirrorGroup.traverse(m => {
       if (m.isMesh) {
         m.material = m.material.clone();
@@ -447,18 +440,18 @@ ScrollTrigger.create({
         ease: 'expo.out',
       },
       {
-        rotY: -0.20, rotX: -0.82,
-        camZ: 3.0,   camY: 3.2,  camX: 0.1,
-        lookY: 0.92,
+        rotY: -0.20, rotX: -0.45,
+        camZ: 3.2,   camY: 1.0,  camX: 0.1,
+        lookY: -0.1,
         lidY: 3.8,   groupY: 0,
         light: 3.0,
         bg: 'radial-gradient(ellipse 65% 50% at 45% 42%, #201600 0%, #070603 100%)',
         ease: 'power3.out',
       },
       {
-        rotY: -1.05, rotX: 0.48,
-        camZ: 3.6,   camY: -1.8, camX: 0.3,
-        lookY: -0.1,
+        rotY: -1.05, rotX: 0.0,
+        camZ: 4.0,   camY: 0.2, camX: 0.0,
+        lookY: 0.0,
         lidY: 0,     groupY: 0,
         light: 1.6,
         bg: 'radial-gradient(ellipse 50% 75% at 60% 85%, #0A1828 0%, #070603 100%)',
@@ -511,7 +504,7 @@ ScrollTrigger.create({
 
       mirrorGroup.rotation.y = group.rotation.y;
       mirrorGroup.rotation.x = -state.rotX;
-      mirrorGroup.position.y = state.groupY * 0.5 - 3.3;
+      mirrorGroup.position.y = state.groupY * 0.5 - 1.4;
 
       camera.position.set(state.camX, state.camY, state.camZ);
       camera.lookAt(0, state.lookY, 0);
@@ -610,16 +603,67 @@ ScrollTrigger.create({
 ====================================== */
 (function initMaterial() {
 
-  gsap.to('#parallaxImg .parallax-img-inner', {
-    y: '-15%',
-    ease: 'none',
-    scrollTrigger: {
-      trigger: '#parallaxWrap',
-      start: 'top bottom',
-      end: 'bottom top',
-      scrub: true
-    }
+  // 자동 슬라이드쇼 — 3초마다 순환
+  const slides = qsa('.parallax-slide');
+  const dots   = qsa('.mat-dot');
+  let current  = 0;
+  let timer    = null;
+
+  function switchSlide(idx) {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    dots.forEach((d, i)   => d.classList.toggle('active', i === idx));
+    current = idx;
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => {
+      switchSlide((current + 1) % slides.length);
+    }, 3000);
+  }
+
+  function startSlideshow() { resetTimer(); }
+
+  // 섹션 진입 시 슬라이드쇼 시작, 이탈 시 정지
+  ScrollTrigger.create({
+    trigger: '#material',
+    start: 'top 80%',
+    end: 'bottom top',
+    onEnter:     () => startSlideshow(),
+    onLeave:     () => clearInterval(timer),
+    onEnterBack: () => startSlideshow(),
+    onLeaveBack: () => clearInterval(timer),
   });
+
+  // 드래그/스와이프 — 마우스 & 터치 공통
+  const wrap = qs('#parallaxWrap');
+  let dragStartX = 0;
+  let isDragging = false;
+
+  function onDragStart(x) {
+    dragStartX = x;
+    isDragging = true;
+  }
+  function onDragEnd(x) {
+    if (!isDragging) return;
+    isDragging = false;
+    const diff = dragStartX - x;
+    if (Math.abs(diff) < 30) return; // 30px 미만은 무시
+    const next = diff > 0
+      ? (current + 1) % slides.length              // 왼쪽 드래그 → 다음
+      : (current - 1 + slides.length) % slides.length; // 오른쪽 드래그 → 이전
+    switchSlide(next);
+    resetTimer(); // 드래그 후 타이머 리셋
+  }
+
+  // 마우스
+  wrap.addEventListener('mousedown',  e => onDragStart(e.clientX));
+  wrap.addEventListener('mouseup',    e => onDragEnd(e.clientX));
+  wrap.addEventListener('mouseleave', e => { if (isDragging) onDragEnd(e.clientX); });
+
+  // 터치
+  wrap.addEventListener('touchstart', e => onDragStart(e.touches[0].clientX), { passive: true });
+  wrap.addEventListener('touchend',   e => onDragEnd(e.changedTouches[0].clientX));
 
   gsap.from('.material-title', {
     opacity: 0,
@@ -636,9 +680,13 @@ ScrollTrigger.create({
   items.forEach((item, i) => {
     ScrollTrigger.create({
       trigger: item,
-      start: 'top 80%',
+      start: 'top 65%',
       onEnter: () => {
         setTimeout(() => item.classList.add('visible'), i * 160);
+        switchSlide(i);   // 재료 항목 진입 시 이미지 전환
+      },
+      onEnterBack: () => {
+        switchSlide(i);   // 역방향 스크롤 시에도 전환
       }
     });
   });

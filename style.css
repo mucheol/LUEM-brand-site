@@ -39,7 +39,7 @@ body {
   pointer-events: none;
   z-index: 9999;
   transform: translate(-50%, -50%);
-  transition: background 0.2s, transform 0.1s;
+  transition: background 0.2s, width 0.15s, height 0.15s; /* transform transition 제거 — 딜레이 원인 */
 }
 .cursor-follower {
   position: fixed;
@@ -49,9 +49,9 @@ body {
   pointer-events: none;
   z-index: 9998;
   transform: translate(-50%, -50%);
-  transition: transform 0.12s ease, width 0.3s, height 0.3s, border-color 0.3s;
+  transition: width 0.3s, height 0.3s, border-color 0.3s; /* transform transition 제거 — JS lerp가 담당 */
 }
-body.cursor-hover .cursor         { transform: translate(-50%,-50%) scale(2); background: var(--gold); }
+body.cursor-hover .cursor         { width: 14px; height: 14px; background: var(--gold); }
 body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var(--gold); }
 
 /* ===== 네비게이션 scrolled 상태 ===== */
@@ -260,29 +260,82 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
 .col-candle-04 { background: linear-gradient(160deg, #E8E4D8 0%, #D8D0BC 100%); }
 .collection-track { display: flex; gap: 0; will-change: transform; }
 
-/* ===== 재료 — 패럴랙스 이미지 ===== */
-/*
-  구조: parallax-img-wrap (overflow:hidden, 고정 height)
-          └ parallax-img (position:absolute, inset:-15% 0 → 위아래 15% 여유)
-              └ parallax-img-inner (100% 채움, GSAP y 이동 대상)
-  parallax-img가 wrap보다 30% 더 크게 잡아두어야 translateY(-15%) 해도 빈 공간 없음
-*/
+/* ===== 재료 — 이미지 슬라이드쇼 ===== */
 .parallax-img-wrap {
   position: relative;
   overflow: hidden;
+  cursor: grab;
+  user-select: none;
 }
+.parallax-img-wrap:active {
+  cursor: grabbing;
+}
+
+/* 슬라이드 레이어 — 절대 위치로 겹침, fade 전환 */
+.parallax-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.parallax-slide.active {
+  opacity: 1;
+}
+
+/* 이미지 채우기 */
 .parallax-img {
   position: absolute;
-  inset: -15% 0;        /* 위아래 15% 여유 → 총 130% 높이 */
+  inset: 0;
   width: 100%;
+  height: 100%;
 }
 .parallax-img-inner {
   width: 100%;
   height: 100%;
-  background:
-    linear-gradient(180deg, rgba(201,151,58,0.15) 0%, transparent 50%),
-    url('https://images.pexels.com/photos/4207912/pexels-photo-4207912.jpeg?auto=compress&cs=tinysrgb&w=800') center/cover no-repeat;
-  will-change: transform;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* 3개 원재료 이미지 */
+/* 소이빈/식물 원재료 플랫레이 */
+.mat-img-1 {
+  background-image:
+    linear-gradient(180deg, rgba(201,151,58,0.12) 0%, transparent 40%),
+    url('https://images.pexels.com/photos/4518616/pexels-photo-4518616.jpeg?auto=compress&cs=tinysrgb&w=800');
+}
+/* 자연 소재 텍스처 — 면/나무결 (기존 3번 → 2번) */
+.mat-img-2 {
+  background-image:
+    linear-gradient(180deg, rgba(201,151,58,0.12) 0%, transparent 40%),
+    url('https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg?auto=compress&cs=tinysrgb&w=800');
+}
+/* 순면 심지 — 캔들 심지 트리밍 */
+.mat-img-3 {
+  background-image:
+    linear-gradient(180deg, rgba(201,151,58,0.12) 0%, transparent 40%),
+    url('https://images.pexels.com/photos/6755809/pexels-photo-6755809.jpeg?auto=compress&cs=tinysrgb&w=800');
+}
+
+/* 하단 인덱스 도트 */
+.mat-img-dots {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 4;
+}
+.mat-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(245,240,232,0.4);
+  transition: background 0.3s, transform 0.3s;
+}
+.mat-dot.active {
+  background: var(--gold);
+  transform: scale(1.4);
 }
 
 /* material-item 등장 transition */
@@ -381,8 +434,18 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: none;
 }
-/* 캔들 뒤 원형 장식 */
+/* 캔들 wrapper hover — 은은한 부상 + 글로우 강화 */
+.hero-candle-col .candle-wrapper {
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              filter 0.6s ease;
+}
+.hero-candle-visual:hover .candle-wrapper {
+  transform: translateY(-10px);
+  filter: drop-shadow(0 50px 80px rgba(201,151,58,0.5)) !important;
+}
+/* 원형 링 hover — 살짝 확대 + 불투명도 상승 */
 .hero-candle-ring {
   position: absolute;
   top: 50%;
@@ -391,6 +454,29 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
   border-radius: 50%;
   border: 1px solid rgba(201,151,58,0.18);
   pointer-events: none;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.6s ease,
+              opacity 0.6s ease;
+}
+.hero-candle-visual:hover .hero-candle-ring {
+  transform: translate(-50%, -50%) scale(1.06);
+  border-color: rgba(201,151,58,0.38);
+}
+/* 캔들 글로우 pulse hover */
+.hero-candle-col .candle-glow {
+  transition: opacity 0.6s ease;
+}
+.hero-candle-visual:hover .candle-glow {
+  opacity: 1 !important;
+  animation: glowPulse 1.8s ease-in-out infinite;
+}
+/* 뱃지 hover — 살짝 우측으로 */
+.hero-candle-badge {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+.hero-candle-visual:hover .hero-candle-badge {
+  transform: translateX(6px);
+  opacity: 1;
 }
 /* 향 이름 뱃지 */
 .hero-candle-badge {
@@ -439,11 +525,11 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
     justify-content: center;
   }
   .hero-content { max-width: 100%; }
-  .hero-sub { font-size: 0.62rem; margin-bottom: 18px; }
-  .hero-title { font-size: 4rem; margin-bottom: 20px; }
+  .hero-sub { font-size: 0.68rem; margin-bottom: 18px; }
+  .hero-title { font-size: 5.2rem; margin-bottom: 20px; }
   .hero-title-indent { padding-left: 28px; font-style: italic; color: var(--charcoal-light); }
-  .hero-desc { font-size: 0.88rem; margin-bottom: 28px; }
-  .hero-btn { font-size: 0.72rem; padding-bottom: 6px; }
+  .hero-desc { font-size: 0.95rem; margin-bottom: 28px; }
+  .hero-btn { font-size: 0.76rem; padding-bottom: 6px; }
   .hero-candle-col { display: none !important; }
   .hero-scroll-hint { bottom: 24px; left: 20px; }
   .hero-scroll-text { font-size: 0.6rem; }
@@ -567,20 +653,20 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
     justify-content: space-between;
     align-items: center;
   }
-  .hero-content { max-width: 360px; flex: none; }
+  .hero-content { max-width: 400px; flex: none; }
   .hero-candle-col {
     flex: 1;
     display: flex !important;
     justify-content: center;
   }
   .hero-candle-ring {
-    width: 260px; height: 260px;
+    width: 300px; height: 300px;
   }
-  .hero-sub { font-size: 0.68rem; margin-bottom: 22px; }
-  .hero-title { font-size: 5rem; margin-bottom: 24px; }
+  .hero-sub { font-size: 0.72rem; margin-bottom: 22px; }
+  .hero-title { font-size: 6.2rem; margin-bottom: 24px; }
   .hero-title-indent { padding-left: 36px; font-style: italic; color: var(--charcoal-light); }
-  .hero-desc { font-size: 0.9rem; margin-bottom: 32px; }
-  .hero-btn { font-size: 0.75rem; padding-bottom: 6px; }
+  .hero-desc { font-size: 0.95rem; margin-bottom: 32px; }
+  .hero-btn { font-size: 0.78rem; padding-bottom: 6px; }
   .hero-scroll-hint { bottom: 32px; left: 36px; }
   .hero-scroll-text { font-size: 0.63rem; }
 
@@ -707,21 +793,21 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
     width: 100%;
     column-gap: 80px;
   }
-  .hero-content { flex: none; width: 480px; }
+  .hero-content { flex: none; width: 520px; }
   .hero-candle-col {
     flex: 1;
     display: flex !important;
     justify-content: center;
-    max-width: 420px;
+    max-width: 500px;
   }
   .hero-candle-ring {
-    width: 320px; height: 320px;
+    width: 400px; height: 400px;
   }
-  .hero-sub { font-size: 0.72rem; margin-bottom: 24px; }
-  .hero-title { font-size: 7.5rem; margin-bottom: 28px; }
-  .hero-title-indent { padding-left: 48px; font-style: italic; color: var(--charcoal-light); }
-  .hero-desc { font-size: 1rem; margin-bottom: 40px; }
-  .hero-btn { font-size: 0.8rem; padding-bottom: 6px; }
+  .hero-sub { font-size: 0.78rem; margin-bottom: 24px; }
+  .hero-title { font-size: 9.5rem; margin-bottom: 28px; }
+  .hero-title-indent { padding-left: 56px; font-style: italic; color: var(--charcoal-light); }
+  .hero-desc { font-size: 1.05rem; margin-bottom: 40px; }
+  .hero-btn { font-size: 0.84rem; padding-bottom: 6px; }
   .hero-scroll-hint { bottom: 40px; left: 60px; }
   .hero-scroll-text { font-size: 0.65rem; }
 
