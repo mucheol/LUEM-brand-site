@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- 배경 -->
+  <rect width="32" height="32" rx="6" fill="#1C1C1C"/>
+
+  <!-- 캔들 몸통 -->
+  <rect x="10" y="13" width="12" height="13" rx="1.5" fill="#F5F0E8"/>
+
+  <!-- 뚜껑 -->
+  <rect x="9" y="11" width="14" height="3" rx="1" fill="#C9973A"/>
+
+  <!-- 왁스 상단 선 -->
+  <rect x="10" y="17" width="12" height="1.5" rx="0.5" fill="#DDB96A" opacity="0.5"/>
+
+  <!-- 심지 -->
+  <rect x="15.2" y="7.5" width="1.6" height="4" rx="0.8" fill="#8A7E74"/>
+
+  <!-- 불꽃 -->
+  <ellipse cx="16" cy="6.5" rx="1.8" ry="2.5" fill="#C9973A"/>
+  <ellipse cx="16" cy="7" rx="0.9" ry="1.4" fill="#F5F0E8" opacity="0.9"/>
+</svg>
