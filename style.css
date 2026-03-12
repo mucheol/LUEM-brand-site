@@ -934,6 +934,7 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
   .section-label { margin-bottom: 16px; }
 }
 
+<<<<<<< HEAD
 /* 1024~1200px — 제품 텍스트 겹침 방지: 배경 추가 */
 @media (min-width: 1024px) and (max-width: 1200px) {
   .detail-text-panel {
@@ -946,3 +947,5 @@ body.cursor-hover .cursor-follower{ width: 60px; height: 60px; border-color: var
   }
 }
 
+=======
+>>>>>>> 901e7b0ffec31889b0004e95cbd0aefeceb212c5
